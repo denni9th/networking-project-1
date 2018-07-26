@@ -1,68 +1,24 @@
 from Tkinter import *
 import ttk
 
-root = Tk()
+#key down function
+def click():
+	
+	entered_text=textentry.get()	
+	output.insert(END, entered_text)
+	textentry.delete(0, END)
+	
 
-content = ttk.Frame(root)
-frame = ttk.Frame(content, borderwidth=5, relief="sunken", width=200, height=100)
-namelbl = ttk.Label(content, text="Name")
-name = ttk.Entry(content)
+window = Tk()
+window.title("A really cool name")
+window.configure(background="white")
 
-onevar = BooleanVar()
-twovar = BooleanVar()
-threevar = BooleanVar()
-onevar.set(True)
-twovar.set(False)
-threevar.set(True)
+Label(window, text="\nChatroom", fg="black", bg="white", font="none 12 bold") .grid(row=0, column=0, sticky=W)
+output = Text(window, fg="black", bg="lightgrey", width=160, height=39, wrap=WORD)
+output.grid(row=3, column=0, columnspan=2, sticky=W)
 
-one = ttk.Checkbutton(content, text="One", variable=onevar, onvalue=True)
-two = ttk.Checkbutton(content, text="Two", variable=twovar, onvalue=True)
-three = ttk.Checkbutton(content, text="Three", variable=threevar, onvalue=True)
-ok = ttk.Button(content, text="Okay")
-cancel = ttk.Button(content, text="Cancel")
+textentry = Entry(window, width=137, fg="black", bg="white", bd=5)
+textentry.grid(row=4, column=0, sticky=W)
+Button(window, text="Send", width=4, command=click, fg="black", bg="lightgrey") .grid(row=4, column=0, sticky=E)
 
-content.grid(column=0, row=0)
-frame.grid(column=0, row=0, columnspan=3, rowspan=2)
-namelbl.grid(column=3, row=0, columnspan=2)
-name.grid(column=3, row=1, columnspan=2)
-one.grid(column=0, row=3)
-two.grid(column=1, row=3)
-three.grid(column=2, row=3)
-ok.grid(column=3, row=3)
-cancel.grid(column=4, row=3)
-
-root.mainloop()
-
-
-
-
-
-
-
-
-
-
-#import Tkinter as Tk
-#root = Tk.Tk()
-#root.title("A really cool name")
-#root.minsize(width=500, height=800)
-#root.maxsize(width=1200, height=900)
-
-#hanSolo = "Hey, who is talking?"
-#msg = Tk.Message(root, text = hanSolo)
-#msg.config(anchor=NE)
-#msg.pack()
-
-#chat = Tk.Entry(root)
-#chat.pack()
-#
-#text = Tk.Entry(root)
-#text.pack()
-
-
-
-#button = Tk.Button(root, text="Send")
-#button.pack()
-
-
-#root.mainloop()
+window.mainloop()
