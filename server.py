@@ -24,10 +24,9 @@ class ClientTCPRequestHandler(SocketServer.BaseRequestHandler):
             self.request.sendall(json.dumps({"usrs": users, "msgs": messages}))
             while True:
                 data = json.loads(self.request.recv(1024))
-                if data['type'] == "message":
-                    print "message: " + data['data']
-                elif data['type'] == "whisper":
-                    print "whisper to " + data['rcpt'] + ": " + data['data']
+                if data['type'] == "message" or data['type'] == "whisper":
+                    with messages_lock:
+                        messages.append(data)
                 self.request.sendall(json.dumps({"usrs": users, "msgs": messages}))
         except ValueError:
             print "User " + username + " disconnected"
