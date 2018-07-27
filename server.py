@@ -5,37 +5,41 @@ import threading
 import SocketServer
 import json
 
-host = "146.232.50.232"
-b_port = 8000
-m_port = 8001
-lock = threading.Lock()
+host = "localhost"
+port = 8000
 messages = []
+messages_lock = threading.Lock()
 users = []
+users_lock = threading.Lock()
 
 # The handler for a connecting client
-# Broadcasts any user changes and messages in the message queue
-class BroadcastTCPRequestHandler(SocketServer.BaseRequestHandler):
+class ClientTCPRequestHandler(SocketServer.BaseRequestHandler):
 
     def handle(self):
         username = self.request.recv(1024)
         print "Connection from " + username
-        self.request.sendall(json.dumps(users))
-
-# Receives messages from clients and adds them to message send queue
-class MessagesTCPRequestHandler(SocketServer.BaseRequestHandler):
-
-    def handle(self):
-        pass
+        try:
+            with users_lock:
+                users.append(username)
+            self.request.sendall(json.dumps({"usrs": users, "msgs": messages}))
+            while True:
+                data = json.loads(self.request.recv(1024))
+                if data['type'] == "message":
+                    print "message: " + data['data']
+                elif data['type'] == "whisper":
+                    print "whisper to " + data['rcpt'] + ": " + data['data']
+                self.request.sendall(json.dumps({"usrs": users, "msgs": messages}))
+        except ValueError:
+            print "User " + username + " disconnected"
+        finally:
+            with users_lock:
+                users.remove(username)
 
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
     pass
 
 if __name__ == "__main__":
-    b_server = ThreadedTCPServer((host, b_port), BroadcastTCPRequestHandler)
-    m_server = ThreadedTCPServer((host, m_port), MessagesTCPRequestHandler)
-    print "Starting server on " + host + ", ports " + str(b_port) + " and " + str(m_port)
-    b_server_thread = threading.Thread(target=b_server.serve_forever)
-    m_server_thread = threading.Thread(target=m_server.serve_forever)
-    b_server_thread.start()
-    m_server_thread.start()
+    server = ThreadedTCPServer((host, port), ClientTCPRequestHandler)
+    print "Starting server on " + host + ", port " + str(port)
+    server.serve_forever()
 
