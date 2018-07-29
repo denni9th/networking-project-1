@@ -21,26 +21,35 @@ class ClientTCPRequestHandler(SocketServer.BaseRequestHandler):
         global messages_lock
         global users
         global users_lock
-        msgs = []
+        hist = []
 
         username = self.request.recv(1024)
         print "Connection from " + username
 
         try:
+            # initate connection
             with users_lock:
+                if username in users: 
+                    self.request.sendall(json.dumps({"err": "username taken"}))
+                    return
                 users.append(username)
             self.request.sendall(json.dumps({"usrs": users}))
+            # main loop
             while True:
                 data = json.loads(self.request.recv(1024))
-                if data['type'] == "message" or data['type'] == "whisper":
-                    with messages_lock:
+                with messages_lock:
+                    # process recieved data
+                    if data['type'] == "message" or data['type'] == "whisper":
                         messages.append(data)
-                msgs = [i for i in messages if i not in msgs]
-                for i in msgs:
-                    if json.loads(i)['type'] == "whisper":
-                        if json.loads(i)['rcpt'] != username:
-                            msgs.remove(i)
-                self.request.sendall(json.dumps({"usrs": users, "msgs": msgs}))
+                    # broadcast new messages
+                    msgs = [i for i in messages if i not in hist and not (i['type'] == "whisper" and i['rcpt'] != username)]
+                    self.request.sendall(json.dumps({"usrs": users, "msgs": msgs}))
+                    hist = hist + [i for i in messages if i not in hist]
+
+                    # cleanup lists to ensure memory usage stays low
+                    if len(messages) > 50:
+                        messages = [(len(messages) - 50):]
+                    hist = [i for i in hist if i in messages]
         
         except ValueError:
             print "User " + username + " disconnected"

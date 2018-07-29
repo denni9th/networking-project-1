@@ -15,5 +15,6 @@ if __name__ == "__main__":
     socket.sendall(json.dumps({"type": "whisper", "data": "hey ;)", "rcpt": "james"}))
     print json.loads(socket.recv(4096))
     socket.sendall(json.dumps({"type": "whisper", "data": "buy milk", "rcpt": "hanSolo"}))
+    print json.loads(socket.recv(4096))
     socket.close()
 
