@@ -16,18 +16,32 @@ users_lock = threading.Lock()
 class ClientTCPRequestHandler(SocketServer.BaseRequestHandler):
 
     def handle(self):
+
+        global messages
+        global messages_lock
+        global users
+        global users_lock
+        msgs = []
+
         username = self.request.recv(1024)
         print "Connection from " + username
+
         try:
             with users_lock:
                 users.append(username)
-            self.request.sendall(json.dumps({"usrs": users, "msgs": messages}))
+            self.request.sendall(json.dumps({"usrs": users}))
             while True:
                 data = json.loads(self.request.recv(1024))
                 if data['type'] == "message" or data['type'] == "whisper":
                     with messages_lock:
                         messages.append(data)
-                self.request.sendall(json.dumps({"usrs": users, "msgs": messages}))
+                msgs = [i for i in messages if i not in msgs]
+                for i in msgs:
+                    if json.loads(i)['type'] == "whisper":
+                        if json.loads(i)['rcpt'] != username:
+                            msgs.remove(i)
+                self.request.sendall(json.dumps({"usrs": users, "msgs": msgs}))
+        
         except ValueError:
             print "User " + username + " disconnected"
         finally:
