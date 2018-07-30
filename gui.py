@@ -6,7 +6,7 @@ import socket
 import json
 import threading
 
-host = "localhost"
+host = "146.232.50.208"
 port = 8000
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
