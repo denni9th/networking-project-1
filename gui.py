@@ -1,5 +1,6 @@
 from Tkinter import *
 import ttk
+import tkMessageBox
 import socket
 import json
 import threading
@@ -58,6 +59,16 @@ def whisper():
 
 
 window = Tk()
+
+
+top = Tk()
+def username():
+   tkMessageBox.showinfo("Say Hello", "Hello World")
+
+username_entry = Entry(window, width=20, fg="black", bg="white", bd=5)
+B1 = Button(top, text = "Enter your username:", command = username)
+B1.pack()
+
 window.title("A really cool name")
 window.configure(background="white")
 
