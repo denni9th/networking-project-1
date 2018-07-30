@@ -1,5 +1,7 @@
 from Tkinter import *
-import SimpleDialog
+import ttk
+import tkMessageBox
+import tkSimpleDialog as simpledialog
 import socket
 import json
 import threading
@@ -11,13 +13,14 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 message = {}
 message_lock = threading.Lock()
 users = []
-username = "test_user"
+username = ""
 
 def connection_loop():
     global message
+    global window
 
     sock.connect((host, port))
-    # TODO ask user for username
+    username = simpledialog.askstring("Input", "Enter username:", parent=window) 
     sock.sendall(username)
     users = json.loads(sock.recv(4096))
     for u in users:
@@ -35,7 +38,11 @@ def connection_loop():
                 output.insert(END, m['from'] + ": " + m['data'] + "\n")
             elif m['type'] == "whisper":
                 output.insert(END, m['from'] + " whispers: " + m['data'] + "\n")
-	users = data[0]
+	if data[0] != users:
+            data[0] = users
+            names.delete(0, END)
+            for u in users:
+                names.insert(END, u + "\n")
 
 def send_message():
     global message
@@ -55,6 +62,8 @@ def send_whisper():
     name.delete(0, END) 
 
 window = Tk()
+
+
 window.title("A really cool name")
 window.configure(background="white")
 
