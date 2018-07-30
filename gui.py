@@ -19,30 +19,32 @@ def connection_loop():
     global username
     global window
 
-    sock.connect((host, port))
-    username = tkSimpleDialog.askstring("Username", "Enter username:", parent=window) 
-    sock.sendall(username)
-    users = json.loads(sock.recv(4096))
-    for u in users:
-        names.insert(END, u + "\n")
-    while True:
-        with message_lock:
-            if message != {}:
-	        sock.sendall(json.dumps(message))
-                message = {}
-            else:
-                sock.sendall(json.dumps({"type": "null"}))
-	data = json.loads(sock.recv(4096))
-	for m in data[1]:
-            if m['type'] == "message":
-                output.insert(END, m['from'] + ": " + m['data'] + "\n")
-            elif m['type'] == "whisper":
-                output.insert(END, m['from'] + " whispers: " + m['data'] + "\n")
-	if data[0] != users:
-            users = data[0]
-            names.delete(0, END)
-            for u in users:
-                names.insert(END, u + "\n")
+    try:
+        sock.connect((host, port))
+        username = tkSimpleDialog.askstring("Username", "Enter username:", parent=window) 
+        sock.sendall(username)
+        users = json.loads(sock.recv(4096))
+        for u in users:
+            names.insert(END, u + "\n")
+        while True:
+            with message_lock:
+                if message != {}:
+                    sock.sendall(json.dumps(message))
+                    message = {}
+                else:
+                    sock.sendall(json.dumps({"type": "null"}))
+            data = json.loads(sock.recv(4096))
+            for m in data[1]:
+                if m['type'] == "message":
+                    output.insert(END, m['from'] + ": " + m['data'] + "\n")
+                elif m['type'] == "whisper":
+                    output.insert(END, m['from'] + " whispers: " + m['data'] + "\n")
+            if data[0] != users:
+                users = data[0]
+                for u in users:
+                    names.insert(END, u + "\n")
+    finally:
+        sock.close()
 
 def send_message():
     global message

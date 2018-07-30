@@ -29,9 +29,6 @@ class ClientTCPRequestHandler(SocketServer.BaseRequestHandler):
         try:
             # initate connection
             with users_lock:
-                if username in users: 
-                    self.request.sendall(json.dumps({"err": "username taken"}))
-                    return
                 users.append(username)
             self.request.sendall(json.dumps(users))
             # main loop
