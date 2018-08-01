@@ -61,6 +61,10 @@ def connection_loop():
                 namesbox.delete(0,'end')
                 for u in users:
                     namesbox.insert(END, u)
+    except ValueError:
+        print "Server disconnected you" #TODO popup
+    except socket.error:
+        print "Error connecting to server" #TODO popup
     finally:
         sock.close()
 
@@ -108,6 +112,9 @@ username = tkSimpleDialog.askstring("Username", "Enter username:", parent=window
 
 thread = threading.Thread(target=connection_loop)
 thread.start()
-window.mainloop()
+try:
+    window.mainloop()
+except TclError:
+    print "Select a user to whisper to" #TODO popup
 running = False
 

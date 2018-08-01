@@ -29,6 +29,9 @@ class ClientTCPRequestHandler(SocketServer.BaseRequestHandler):
 
         username = self.request.recv(1024)
         print "Connection from " + username
+        if username in users:
+            self.request.close()
+            return
 
         try:
             # initate connection
@@ -58,7 +61,7 @@ class ClientTCPRequestHandler(SocketServer.BaseRequestHandler):
                         messages = messages[i:]
                     hist = [i for i in hist if i in messages]
         
-        except:
+        except ValueError:
             print "User " + username + " disconnected"
         finally:
             with users_lock:
