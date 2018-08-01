@@ -46,7 +46,9 @@ class ClientTCPRequestHandler(SocketServer.BaseRequestHandler):
                             data['id'] = counter
                         messages.append(data)
                     # broadcast new messages
-                    msgs = [i for i in messages if i not in hist and not (i['type'] == "whisper" and (i['rcpt'] != username or i['from'] != username))]
+                    msgs = [i for i in messages if 
+                            i not in hist and 
+                            not (i['type'] == "whisper" and (i['rcpt'] != username and i['from'] != username))]
                     self.request.sendall(json.dumps([users, msgs]))
                     hist = hist + [i for i in messages if i not in hist]
 
@@ -56,7 +58,7 @@ class ClientTCPRequestHandler(SocketServer.BaseRequestHandler):
                         messages = messages[i:]
                     hist = [i for i in hist if i in messages]
         
-        except ValueError:
+        except:
             print "User " + username + " disconnected"
         finally:
             with users_lock:

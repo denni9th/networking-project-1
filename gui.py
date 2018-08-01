@@ -5,7 +5,7 @@ import socket
 import json
 import threading
 
-host = "146.232.50.229"
+host = "localhost"
 port = 8000
 
 message = {}
@@ -17,6 +17,7 @@ running = True
 
 def connection_loop():
     global message
+    global host
     global username
     global sock
     global running
@@ -91,6 +92,7 @@ messagew = Entry(window, width=50, fg="black", bg="white", bd=5)
 messagew.grid(row=7, column=0, sticky=W)
 Button(window, text="Whisper", width=4, command=send_whisper, fg="black", bg="lightgrey") .grid(row=7, column=0, sticky=E)
         
+host = tkSimpleDialog.askstring("Host", "Enter hostname:", parent=window)
 username = tkSimpleDialog.askstring("Username", "Enter username:", parent=window) 
 
 thread = threading.Thread(target=connection_loop)
