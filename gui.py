@@ -8,25 +8,29 @@ import threading
 host = "146.232.50.208"
 port = 8000
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 message = {}
 message_lock = threading.Lock()
 users = []
 username = ""
 
+running = True
+
 def connection_loop():
     global message
     global username
     global window
+    global sock
+    global running
 
     try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.connect((host, port))
         username = tkSimpleDialog.askstring("Username", "Enter username:", parent=window) 
         sock.sendall(username)
         users = json.loads(sock.recv(4096))
         for u in users:
             names.insert(END, u + "\n")
-        while True:
+        while running == True:
             with message_lock:
                 if message != {}:
                     sock.sendall(json.dumps(message))
@@ -43,6 +47,8 @@ def connection_loop():
                 users = data[0]
                 for u in users:
                     names.insert(END, u + "\n")
+    except:
+        pass
     finally:
         sock.close()
 
@@ -90,4 +96,5 @@ Button(window, text="Whisper", width=4, command=send_whisper, fg="black", bg="li
 thread = threading.Thread(target=connection_loop)
 thread.start()
 window.mainloop()
+running = False
 
