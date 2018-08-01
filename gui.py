@@ -46,8 +46,6 @@ def connection_loop():
                 users = data[0]
                 for u in users:
                     namesbox.insert(END, u)
-    except:
-        pass
     finally:
         sock.close()
 
@@ -64,9 +62,8 @@ def send_whisper():
     global username
     while message != {}: continue
     with message_lock:
-        message = {"type": "whisper", "data": messagew.get(), "from": username, "rcpt": name.get()}
+        message = {"type": "whisper", "data": messagew.get(), "from": username, "rcpt": namesbox.get(namesbox.curselection())}
     messagew.delete(0, END)
-    #name.delete(0, END) 
 
 window = Tk()
 

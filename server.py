@@ -53,8 +53,8 @@ class ClientTCPRequestHandler(SocketServer.BaseRequestHandler):
                     hist = hist + [i for i in messages if i not in hist]
 
                     # cleanup lists to ensure memory usage stays low
-                    if len(messages) > 50:
-                        i = len(messages) - 50
+                    if len(messages) > 5:
+                        i = len(messages) - 5
                         messages = messages[i:]
                     hist = [i for i in hist if i in messages]
         
