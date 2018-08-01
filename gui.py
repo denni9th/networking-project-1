@@ -46,8 +46,6 @@ def connection_loop():
                 users = data[0]
                 for u in users:
                     names.insert(END, u + "\n")
-    except:
-        pass
     finally:
         sock.close()
 
@@ -91,7 +89,7 @@ Label(window, text="Private message", fg="black", bg="white", font="none 12 bold
 messagew = Entry(window, width=50, fg="black", bg="white", bd=5) 
 messagew.grid(row=7, column=0, sticky=W)
 Button(window, text="Whisper", width=4, command=send_whisper, fg="black", bg="lightgrey") .grid(row=7, column=0, sticky=E)
-        
+
 host = tkSimpleDialog.askstring("Host", "Enter hostname:", parent=window)
 username = tkSimpleDialog.askstring("Username", "Enter username:", parent=window) 
 
