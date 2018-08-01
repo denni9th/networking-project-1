@@ -17,6 +17,7 @@ running = True
 
 def connection_loop():
     global message
+    global host
     global username
     global sock
     global running
@@ -27,7 +28,6 @@ def connection_loop():
         sock.sendall(username)
         users = json.loads(sock.recv(4096))
         for u in users:
-            #names.insert(END, u + "\n")
             namesbox.insert(END, u)
         while running == True:
             with message_lock:
@@ -45,10 +45,7 @@ def connection_loop():
             if data[0] != users:
                 users = data[0]
                 for u in users:
-                   # names.insert(END, u + "\n")
                     namesbox.insert(END, u)
-
-
     except:
         pass
     finally:
@@ -99,7 +96,8 @@ Label(window, text="Private message", fg="black", bg="white", font="none 12 bold
 messagew = Entry(window, width=50, fg="black", bg="white", bd=5) 
 messagew.grid(row=7, column=0, sticky=W)
 Button(window, text="Whisper", width=4, command=send_whisper, fg="black", bg="lightgrey") .grid(row=7, column=0, sticky=E)
-        
+
+host = tkSimpleDialog.askstring("Host", "Enter hostname:", parent=window)
 username = tkSimpleDialog.askstring("Username", "Enter username:", parent=window) 
 
 thread = threading.Thread(target=connection_loop)
