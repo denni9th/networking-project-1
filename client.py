@@ -12,9 +12,11 @@ if __name__ == "__main__":
     print json.loads(socket.recv(4096))
     socket.sendall(json.dumps({"type": "message", "data": "hello"}))
     print json.loads(socket.recv(4096))
-    socket.sendall(json.dumps({"type": "whisper", "data": "hey ;)", "rcpt": "james"}))
+    socket.sendall(json.dumps({"type": "whisper", "data": "hey ;)", "rcpt":
+        "james", "from": "hanSolo"}))
     print json.loads(socket.recv(4096))
-    socket.sendall(json.dumps({"type": "whisper", "data": "buy milk", "rcpt": "hanSolo"}))
+    socket.sendall(json.dumps({"type": "whisper", "data": "buy milk", "rcpt":
+        "hanSolo", "from": "hanSolo"}))
     print json.loads(socket.recv(4096))
     socket.close()
 
