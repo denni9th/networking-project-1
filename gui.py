@@ -43,7 +43,22 @@ def connection_loop():
                 elif m['type'] == "whisper":
                     output.insert(END, m['from'] + " whispers: " + m['data'] + "\n")
             if data[0] != users:
+                if len(data) > len(users):
+                    #connected
+                    output.insert(END, "The following users are now online: ")
+                    for i in data[0]:
+                        if i not in users:
+                            output.insert(END, i)
+                    output.insert(END, "\n")
+                else:
+                    #disconnected
+                    output.insert(END, "The following users are now offline: ")
+                    for i in users:
+                        if i not in data[0]:
+                            output.insert(END, i)
+                    output.insert(END, "\n")
                 users = data[0]
+                namesbox.delete(0,'end')
                 for u in users:
                     namesbox.insert(END, u)
     finally:
