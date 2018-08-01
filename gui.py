@@ -5,7 +5,7 @@ import socket
 import json
 import threading
 
-host = "146.232.50.208"
+host = "localhost"
 port = 8000
 
 message = {}
