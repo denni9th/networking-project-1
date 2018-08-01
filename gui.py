@@ -5,7 +5,7 @@ import socket
 import json
 import threading
 
-host = "146.232.50.229"
+host = "localhost"
 port = 8000
 
 message = {}
@@ -27,7 +27,8 @@ def connection_loop():
         sock.sendall(username)
         users = json.loads(sock.recv(4096))
         for u in users:
-            names.insert(END, u + "\n")
+            #names.insert(END, u + "\n")
+            namesbox.insert(END, u)
         while running == True:
             with message_lock:
                 if message != {}:
@@ -44,7 +45,10 @@ def connection_loop():
             if data[0] != users:
                 users = data[0]
                 for u in users:
-                    names.insert(END, u + "\n")
+                   # names.insert(END, u + "\n")
+                    namesbox.insert(END, u)
+
+
     except:
         pass
     finally:
@@ -65,7 +69,7 @@ def send_whisper():
     with message_lock:
         message = {"type": "whisper", "data": messagew.get(), "from": username, "rcpt": name.get()}
     messagew.delete(0, END)
-    name.delete(0, END) 
+    #name.delete(0, END) 
 
 window = Tk()
 
@@ -81,11 +85,16 @@ textentry = Entry(window, width=135, fg="black", bg="white", bd=5)
 textentry.grid(row=5, column=1, sticky=W)
 Button(window, text="Send", width=4, command=send_message, fg="black", bg="lightgrey") .grid(row=5, column=1, sticky=E)
 
-names = Text(window, fg="black", bg="lightgrey", width=60, height=39, wrap=WORD)
-names.grid(row=3, column=0, columnspan=2, sticky=W)
-Label(window, text="Whisper to", fg="black", bg="white", font="none 12 bold") .grid(row=4, column=0, sticky=W)
-name = Entry(window, width=20, fg="black", bg="white", bd=5) 
-name.grid(row=5, column=0, sticky=W)
+#names = Text(window, fg="black", bg="lightgrey", width=60, height=39, wrap=WORD)
+#names.grid(row=3, column=0, columnspan=2, sticky=W)
+#Label(window, text="Whisper to", fg="black", bg="white", font="none 12 bold") .grid(row=4, column=0, sticky=W)
+#name = Entry(window, width=20, fg="black", bg="white", bd=5) 
+#name.grid(row=5, column=0, sticky=W)
+
+namesbox = Listbox(window)
+namesbox.config(relief=SUNKEN, border=2)
+namesbox.grid(row=3, column=0 ,sticky=W)
+
 Label(window, text="Private message", fg="black", bg="white", font="none 12 bold") .grid(row=6, column=0, sticky=W)
 messagew = Entry(window, width=50, fg="black", bg="white", bd=5) 
 messagew.grid(row=7, column=0, sticky=W)
