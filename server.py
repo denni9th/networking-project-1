@@ -11,6 +11,8 @@ messages = []
 messages_lock = threading.Lock()
 users = []
 users_lock = threading.Lock()
+counter = 0
+counter_lock = threading.Lock()
 
 # The handler for a connecting client
 class ClientTCPRequestHandler(SocketServer.BaseRequestHandler):
@@ -21,6 +23,8 @@ class ClientTCPRequestHandler(SocketServer.BaseRequestHandler):
         global messages_lock
         global users
         global users_lock
+        global counter
+        global counter_lock
         hist = []
 
         username = self.request.recv(1024)
@@ -37,9 +41,12 @@ class ClientTCPRequestHandler(SocketServer.BaseRequestHandler):
                 with messages_lock:
                     # process recieved data
                     if data['type'] == "message" or data['type'] == "whisper":
+                        with counter_lock:
+                            counter += 1
+                            data['id'] = counter
                         messages.append(data)
                     # broadcast new messages
-                    msgs = [i for i in messages if i not in hist and not (i['type'] == "whisper" and i['rcpt'] != username)]
+                    msgs = [i for i in messages if i not in hist and not (i['type'] == "whisper" and (i['rcpt'] != username or i['from'] != username))]
                     self.request.sendall(json.dumps([users, msgs]))
                     hist = hist + [i for i in messages if i not in hist]
 

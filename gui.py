@@ -24,8 +24,8 @@ def connection_loop():
 
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.connect((host, port))
         username = tkSimpleDialog.askstring("Username", "Enter username:", parent=window) 
+        sock.connect((host, port))
         sock.sendall(username)
         users = json.loads(sock.recv(4096))
         for u in users:
